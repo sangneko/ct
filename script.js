@@ -32,6 +32,7 @@ function drawBoard() {
     ctx.stroke();
   }
 
+  // 2 cung tướng
   drawPalace(3, 0, 5, 2);
   drawPalace(5, 0, 3, 2);
   drawPalace(3, 9, 5, 7);
@@ -64,7 +65,7 @@ function drawPiece(x, y, text, color) {
 // --- Khởi tạo quân ---
 function initialPieces() {
   return [
-    // Đen
+    // Đen (AI)
     {x:0,y:0,text:"車",color:"black"},{x:1,y:0,text:"馬",color:"black"},
     {x:2,y:0,text:"象",color:"black"},{x:3,y:0,text:"士",color:"black"},
     {x:4,y:0,text:"將",color:"black"},{x:5,y:0,text:"士",color:"black"},
@@ -73,7 +74,7 @@ function initialPieces() {
     {x:7,y:2,text:"砲",color:"black"},{x:0,y:3,text:"卒",color:"black"},
     {x:2,y:3,text:"卒",color:"black"},{x:4,y:3,text:"卒",color:"black"},
     {x:6,y:3,text:"卒",color:"black"},{x:8,y:3,text:"卒",color:"black"},
-    // Đỏ
+    // Đỏ (người chơi)
     {x:0,y:9,text:"車",color:"red"},{x:1,y:9,text:"馬",color:"red"},
     {x:2,y:9,text:"相",color:"red"},{x:3,y:9,text:"士",color:"red"},
     {x:4,y:9,text:"帥",color:"red"},{x:5,y:9,text:"士",color:"red"},
@@ -168,31 +169,36 @@ function resetGame(winnerColor) {
   }, 300);
 }
 
-// --- AI chỉ đánh khi có thể ăn ---
+// --- AI logic ---
+// Nếu không ăn được, AI sẽ tìm nước di chuyển hợp lệ ngẫu nhiên.
 function aiAttack() {
-  let moves = [];
+  let attackMoves = [];
+  let moveList = [];
 
   for (let piece of pieces.filter(p => p.color === "black")) {
     for (let x = 0; x < cols; x++) {
       for (let y = 0; y < rows; y++) {
         const target = getPiece(x, y);
-        if (target && target.color === "red" && isValidMove(piece, x, y)) {
-          moves.push({piece, x, y});
+        if (isValidMove(piece, x, y)) {
+          if (target && target.color === "red") attackMoves.push({piece, x, y});
+          else moveList.push({piece, x, y});
         }
       }
     }
   }
 
-  if (moves.length === 0) {
-    // Không có nước ăn nào, bỏ lượt
+  let move = attackMoves.length > 0 
+    ? attackMoves[Math.floor(Math.random() * attackMoves.length)]
+    : moveList[Math.floor(Math.random() * moveList.length)];
+
+  if (!move) {
     currentTurn = "red";
     document.getElementById("turn").textContent = "Lượt: Đỏ";
     return;
   }
 
-  const move = moves[Math.floor(Math.random() * moves.length)];
   const target = getPiece(move.x, move.y);
-  pieces = pieces.filter(p => p !== target);
+  if (target) pieces = pieces.filter(p => p !== target);
   move.piece.x = move.x;
   move.piece.y = move.y;
 
@@ -204,29 +210,33 @@ function aiAttack() {
 
 // --- Chọn quân & di chuyển ---
 let selected = null;
-canvas.addEventListener("click", e=>{
+canvas.addEventListener("click", e => {
   if (currentTurn !== "red") return;
 
   const rect = canvas.getBoundingClientRect();
   const x = Math.floor((e.clientX - rect.left) / size);
   const y = Math.floor((e.clientY - rect.top) / size);
 
-  if(selected){
-    let target=getPiece(x,y);
-    if(target && sameColor(selected,target)){ selected=null; return; }
-    if(isValidMove(selected,x,y)){
-      if(target) pieces=pieces.filter(p=>p!==target);
-      selected.x=x; selected.y=y;
+  if (selected) {
+    let target = getPiece(x, y);
+    if (target && sameColor(selected, target)) {
+      selected = null;
+      return;
+    }
+    if (isValidMove(selected, x, y)) {
+      if (target) pieces = pieces.filter(p => p !== target);
+      selected.x = x;
+      selected.y = y;
       currentTurn = "black";
       document.getElementById("turn").textContent = "Lượt: Đen";
       drawBoard(); drawPieces();
       checkWin();
       setTimeout(aiAttack, 800);
     }
-    selected=null;
+    selected = null;
   } else {
-    let p=getPiece(x,y);
-    if(p && p.color==="red") selected=p;
+    let p = getPiece(x, y);
+    if (p && p.color === "red") selected = p;
   }
 });
 
