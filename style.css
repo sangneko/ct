@@ -1,61 +1,77 @@
-/* --- Style chung --- */
 body {
-  font-family: Arial, sans-serif;
+
+  font-family: Georgia, 'Times New Roman', Times, serif;
   text-align: center;
-  /* Dùng margin 0 để vừa khít màn hình mobile */
-  margin: 0; 
+  margin: 0;
   padding: 10px;
-  background: linear-gradient(to bottom right, #87cefa, #e0f7ff);
-  /* Ngăn người dùng vô tình bôi đen văn bản khi click */
+
+  background-color: #f5f0e5; 
+  color: #5d4a3c; 
+
   user-select: none;
-  -webkit-user-select: none; /* Safari */
+  -webkit-user-select: none; 
 }
 
 h1 {
-  color: #222;
-  font-size: 1.8em; /* Giảm cỡ chữ 1 chút cho mobile */
+  color: #a0522d; 
+  font-size: 1.8em;
   margin: 10px 0;
+
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1); 
 }
 
 #turn {
   font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
+  color: #5d4a3c; 
+  margin-bottom: 15px; 
   font-size: 1.1em;
-  /* Đặt chiều cao dòng để không bị nhảy layout */
-  line-height: 1.4; 
+  line-height: 1.5; 
 }
 
-/* --- Style cho Bàn cờ (Mobile-First) --- */
+
+
+#turn span[style*="color: red"] {
+  color: #c0392b !important; 
+  font-weight: bold;
+}
+
+#turn span[style*="color: black"] {
+  color: #34495e !important; 
+  font-weight: bold;
+}
+
+
+
 canvas {
-  background: #fdf5dc;
-  border: 2px solid #333;
+  background: #fdf5dc; 
   
-  /* QUAN TRỌNG: 
-    - width: 100% -> Chiếm 100% chiều rộng (trên mobile)
-    - max-width: 450px -> Nhưng không được rộng quá 450px (trên PC)
-    - height: auto -> Tự động tính chiều cao để giữ tỷ lệ 10:9
-  */
+  
+  border: 8px solid #8B4513; 
+  
   width: 100%;
   max-width: 450px;
-  height: auto; 
+  height: auto;
+  display: block;
+  margin: 0 auto;
   
-  display: block; /* Loại bỏ khoảng trống thừa bên dưới canvas */
-  margin: 0 auto; /* Tự động căn giữa */
+
+  border-radius: 4px; 
+  
+ 
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
 }
 
-/* --- Style cho Máy tính (Desktop) --- */
-/* Khi màn hình rộng hơn 480px (ví dụ: tablet, PC) */
+
 @media (min-width: 480px) {
   body {
-    padding: 20px; /* Tăng lề cho thoải mái */
+    padding: 20px;
   }
 
   h1 {
-    font-size: 2.2em; /* Trả lại cỡ chữ lớn */
+    font-size: 2.2em; 
   }
 
   #turn {
-    font-size: 1.25em; /* Cỡ chữ lớn hơn */
+    font-size: 1.25em; 
   }
 }
